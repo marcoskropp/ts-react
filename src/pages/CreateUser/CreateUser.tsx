@@ -1,4 +1,5 @@
 import React, { FunctionComponent, FormEvent, useState } from 'react'
+import { toast } from 'react-toastify'
 import uuid from 'uuid/v4'
 
 import { IProps, IUser } from './Interfaces'
@@ -6,6 +7,7 @@ import { useStyles } from './Styles'
 
 import { Input } from '../../components/Input/Input'
 import { Button } from '../../components/Button/Button'
+import { Toast } from '../../components/Toast/Toast'
 
 const CreateUser: FunctionComponent<IProps> = ({ history }) => {
   const classes = useStyles({})
@@ -26,7 +28,8 @@ const CreateUser: FunctionComponent<IProps> = ({ history }) => {
     event.preventDefault()
     
     if(!user.name || !user.password) {
-      return alert('Please fill inputs')
+      toast.warn('Please fill inputs')
+      return
     }
 
     const users = JSON.parse(localStorage.getItem('users') || '[]')
@@ -35,11 +38,12 @@ const CreateUser: FunctionComponent<IProps> = ({ history }) => {
 
     localStorage.setItem('users', JSON.stringify(users))
 
-    history.push('/')
+    history.push('/', { toastMessage: 'User created with success', toastType: 'success' } )
   }
 
   return (
     <div className={classes.container}>
+      <Toast />
       <h1>Create User</h1>
       <form onSubmit={handleSubmit}>
         <div className={classes.formContent}>

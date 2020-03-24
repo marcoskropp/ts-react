@@ -1,20 +1,38 @@
 import React, { FunctionComponent, useState, useEffect } from 'react'
-import { Link } from 'react-router-dom'
+import { Link, useHistory } from 'react-router-dom'
 import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, Fab } from '@material-ui/core'
 import { Edit, Delete } from '@material-ui/icons'
+import { toast } from 'react-toastify'
 
 import { IUser, IUsers } from './Interfaces'
 import { useStyles } from './Styles'
 
 import { Button } from '../../components/Button/Button'
+import { Toast } from '../../components/Toast/Toast'
 
 const Dashboard: FunctionComponent = () => {
+  const history = useHistory<Record<string, string>>()
   const classes = useStyles({})
   const [users, setUsers] = useState<IUsers>([])
 
   useEffect(() => {
+    showToast()
     getUsers()
   }, [])
+
+  const showToast = (): void => {
+    if(history.location.state) {
+      const {
+        toastMessage = '',
+        toastType = 'info'
+      }: Record<string, string> = history.location.state
+
+      if(toastType === 'info') toast.info(toastMessage)
+      if(toastType === 'warn') toast.warn(toastMessage)
+      if(toastType === 'success') toast.success(toastMessage)
+      if(toastType === 'error') toast.error(toastMessage)
+    }
+  }
 
   const getUsers = (): void => {
     const users = JSON.parse(localStorage.getItem('users'))
@@ -27,11 +45,16 @@ const Dashboard: FunctionComponent = () => {
 
     const shouldDelete = window.confirm(`Are you sure you want to remove`)
     
-    if(!shouldDelete) return
+    if(!shouldDelete) {
+      toast.error('Cannot find user')
+      return
+    }
 
     localStorage.setItem('users', JSON.stringify(removedUser))
 
     getUsers()
+
+    toast.success('User removed with success')
   }
 
   const dateFormat = (date: string): string => {
@@ -40,6 +63,7 @@ const Dashboard: FunctionComponent = () => {
 
   return (
     <div className={classes.container}>
+      <Toast />
       <div className={classes.header}>
         <h1>Dashboard</h1>
         <Button color='default' to='/users/create'>Create</Button>

@@ -33,7 +33,7 @@ const EditUser: FunctionComponent<IProps> = ({ match: { params: { id } } }) => {
     
     const findedUser = users.find((user: IUser) => user.id === id && user)
 
-    if(!findedUser) history.push('/')
+    if(!findedUser) history.push('/', { toastMessage: 'Cannot find user', toastType: 'error' })
 
     setUser(findedUser)
   }
@@ -53,7 +53,7 @@ const EditUser: FunctionComponent<IProps> = ({ match: { params: { id } } }) => {
 
     localStorage.setItem('users', JSON.stringify(newUsers))
     
-    history.push('/')
+    history.push('/', { toastMessage: 'User updated with success', toastType: 'success' } )
   }
 
   return (
